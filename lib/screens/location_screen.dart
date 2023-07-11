@@ -1,12 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../utilities/constants.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LocationScreen extends StatefulWidget {
-  const LocationScreen({super.key});
+  final Map<String, dynamic> data;
+  const LocationScreen({super.key, required this.data});
 
   @override
   LocationScreenState createState() => LocationScreenState();
@@ -14,141 +11,118 @@ class LocationScreen extends StatefulWidget {
 
 class LocationScreenState extends State<LocationScreen> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    String backgroundImageUrl = '${widget.data['weather'][0]['main']}-weather';
+    String fullURL = 'https://source.unsplash.com/random/?$backgroundImageUrl';
+
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                // image: AssetImage('images/location_background.jpg'),
-                image: const NetworkImage(
-                    'https://source.unsplash.com/random/?nature,day'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.white.withOpacity(0.8), BlendMode.dstATop),
-              ),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(fullURL),
+            colorFilter: ColorFilter.mode(
+              Colors.white.withOpacity(.5),
+              BlendMode.lighten,
             ),
-            constraints: const BoxConstraints.expand(),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    Colors.white.withOpacity(0.0),
-                    Colors.white.withOpacity(0.0)
-                  ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                  // color: Colors.white.withOpacity(0.0),
-                ),
-              ),
-            ),
+            fit: BoxFit.cover,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              SafeArea(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    TextButton(
-                      onPressed: () {},
-                      child: const Icon(
-                        Icons.near_me,
-                        size: 50.0,
-                        color: kSecondaryColor,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Icon(
-                        Icons.location_city,
-                        size: 50.0,
-                        color: kSecondaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Icon(
-                      FontAwesomeIcons.cloudSun,
-                      size: 120,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 64.h),
+              Icon(Icons.sunny, size: 128.w),
+              SizedBox(height: 64.h),
+              Row(
+                children: [
+                  Text(
+                    ((widget.data['main']['temp'] - 272.15).round()).toString(),
+                    style: TextStyle(
+                        fontSize: 128.sp, fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          '32',
-                          style: kTempTextStyle,
+                        Text(
+                          '°',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 64.sp),
+                          textAlign: TextAlign.start,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 35,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.white, width: 10),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Container(
-                              height: 7,
-                              width: 35,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10)
-                                  // shape: BoxShape.circle,
-                                  ),
-                            ),
-                            const Text(
-                              'now',
-                              style: TextStyle(
-                                fontSize: 30.0,
-                                fontFamily: 'Spartan MB',
-                                letterSpacing: 13,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'now',
+                          style: TextStyle(
+                              letterSpacing: 12.w,
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              Text(
+                'Grab sunglasses',
+                style: TextStyle(fontSize: 50.sp, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 24.h),
+              Text(
+                'it\'s super ${widget.data['weather'][0]['main']} in ${widget.data['name']}',
+                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w500),
+              ),
+              const Spacer(),
+              Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.r),
+                  color: const Color(0xff7CCCC9),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '07h 12min',
+                      style: TextStyle(
+                        fontSize: 32.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.sunny,
+                          size: 32.w,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 24.w),
+                        Text('before sunrise',
+                            style: TextStyle(
+                                fontSize: 20.sp, color: Colors.white)),
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(right: 24.0),
-                child: Text(
-                  "It's 🥶 in gaza! Dress 🧤🧣",
-                  textAlign: TextAlign.right,
-                  style: kMessageTextStyle,
-                ),
-              ),
-              ClipRRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                  child: Container(
-                    padding: EdgeInsets.all(34),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                    ),
-                    child: Text('fffffmmmmmmm'),
-                  ),
-                ),
-              ),
+              SizedBox(height: 32.h),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
