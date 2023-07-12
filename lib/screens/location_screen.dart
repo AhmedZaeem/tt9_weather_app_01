@@ -1,5 +1,7 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:weather_app/services/networking.dart';
 
 class LocationScreen extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -15,9 +17,11 @@ class LocationScreenState extends State<LocationScreen> {
     super.initState();
   }
 
+  Map<String, dynamic>? selectedCountry;
   @override
   Widget build(BuildContext context) {
-    String backgroundImageUrl = '${widget.data['weather'][0]['main']}-weather';
+    String backgroundImageUrl =
+        '${selectedCountry == null ? widget.data['weather'][0]['main'] : selectedCountry!['weather'][0]['main']}-weather';
     String fullURL = 'https://source.unsplash.com/random/?$backgroundImageUrl';
 
     return Scaffold(
@@ -40,12 +44,46 @@ class LocationScreenState extends State<LocationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 64.h),
-              Icon(Icons.sunny, size: 128.w),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedCountry = null;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.location_on,
+                      size: 36.h,
+                    )),
+                IconButton(
+                    onPressed: () {
+                      showCountryPicker(
+                        context: context,
+                        showPhoneCode: false,
+                        onSelect: (Country country) async {
+                          NetworkHelper network = NetworkHelper(
+                              url:
+                                  'https://api.openweathermap.org/data/2.5/weather?q=${country.name}&appid=d33cd8a1b22dfe2c6c2c6584893c07a8');
+                          selectedCountry = await network.getData();
+
+                          setState(() {});
+                        },
+                      );
+                    },
+                    icon: Icon(
+                      Icons.location_city,
+                      size: 36.h,
+                    )),
+              ]),
               SizedBox(height: 64.h),
               Row(
                 children: [
                   Text(
-                    ((widget.data['main']['temp'] - 272.15).round()).toString(),
+                    selectedCountry == null
+                        ? ((widget.data['main']['temp'] - 272.15).round())
+                            .toString()
+                        : ((selectedCountry!['main']['temp'] - 272.15).round())
+                            .toString(),
                     style: TextStyle(
                         fontSize: 128.sp, fontWeight: FontWeight.bold),
                   ),
@@ -75,12 +113,12 @@ class LocationScreenState extends State<LocationScreen> {
               ),
               SizedBox(height: 24.h),
               Text(
-                'Grab sunglasses',
+                'Grab Sunglasses',
                 style: TextStyle(fontSize: 50.sp, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 24.h),
               Text(
-                'it\'s super ${widget.data['weather'][0]['main']} in ${widget.data['name']}',
+                'it\'s super ${selectedCountry == null ? widget.data['weather'][0]['main'] : selectedCountry!['weather'][0]['main']} in ${selectedCountry == null ? widget.data['name'] : selectedCountry!['name']}',
                 style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w500),
               ),
               const Spacer(),
@@ -126,4 +164,13 @@ class LocationScreenState extends State<LocationScreen> {
       ),
     );
   }
+  //
+  // Future<void> setData(Country country) async {
+  //   NetworkHelper network = NetworkHelper(
+  //       url:
+  //           'https://api.openweathermap.org/data/2.5/weather?q=${country.name}&appid=d33cd8a1b22dfe2c6c2c6584893c07a8');
+  //   setState(() async {
+  //     selectedCountry = await network.getData();
+  //   });
+  // }
 }

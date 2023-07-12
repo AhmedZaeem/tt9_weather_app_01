@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_app/services/networking.dart';
 
+import '../services/networking.dart';
 import 'location_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -55,7 +55,7 @@ class LoadingScreenState extends State<LoadingScreen> {
       final position = await _determinePosition();
       var data = await NetworkHelper(
               url:
-                  'https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=f716a43596a928023a827e6beeb88596')
+                  'https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=d33cd8a1b22dfe2c6c2c6584893c07a8')
           .getData();
       if (mounted) {
         Navigator.push(
