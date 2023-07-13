@@ -1,7 +1,8 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:weather_app/services/networking.dart';
+
+import '../services/networking.dart';
 
 class LocationScreen extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -14,10 +15,25 @@ class LocationScreen extends StatefulWidget {
 class LocationScreenState extends State<LocationScreen> {
   @override
   void initState() {
+    getImage();
     super.initState();
   }
 
   Map<String, dynamic>? selectedCountry;
+  bool isLoaded = false;
+  ImageProvider _image = AssetImage('images/location_background.jpg');
+  ImageProvider _networkImage =
+      NetworkImage('https://source.unsplash.com/random/?city,nature');
+  void getImage() {
+    _networkImage
+        .resolve(const ImageConfiguration())
+        .addListener(ImageStreamListener((image, synchronousCall) {
+      setState(() {
+        isLoaded = true;
+      });
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     String backgroundImageUrl =
@@ -30,7 +46,7 @@ class LocationScreenState extends State<LocationScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(fullURL),
+            image: !isLoaded ? _image : _networkImage,
             colorFilter: ColorFilter.mode(
               Colors.white.withOpacity(.5),
               BlendMode.lighten,
@@ -53,7 +69,7 @@ class LocationScreenState extends State<LocationScreen> {
                     },
                     icon: Icon(
                       Icons.location_on,
-                      size: 36.h,
+                      size: 44.h,
                     )),
                 IconButton(
                     onPressed: () {
@@ -72,7 +88,7 @@ class LocationScreenState extends State<LocationScreen> {
                     },
                     icon: Icon(
                       Icons.location_city,
-                      size: 36.h,
+                      size: 44.h,
                     )),
               ]),
               SizedBox(height: 64.h),
